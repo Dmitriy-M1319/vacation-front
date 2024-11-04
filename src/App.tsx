@@ -1,13 +1,8 @@
-import React from 'react';
-import logo from './logo.svg';
-import EmployeeList from './components/employee/EmployeeList';
+import React from "react";
+import AppRouter from "./router/AppRouter";
 
 function App() {
-
-
-  return (
-    <EmployeeList /> 
-  );
+  return <AppRouter />;
 }
 
 export default App;
