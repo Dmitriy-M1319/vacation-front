@@ -1,19 +1,20 @@
 import React from "react";
-import { IVacation } from "../../models";
+import { IEmployee, IVacation } from "../../models";
 import { Link } from "react-router-dom";
 
 interface VacationProps {
   vacation: IVacation;
+  employee: IEmployee
 }
 
-function Vacation({ vacation }: VacationProps) {
+function Vacation({ vacation, employee }: VacationProps) {
   return (
     <div className="row m-2 p-2 border border-primary rounded">
       <div className="col-12">
         <div className="fw-bold">Отпуск №{vacation.id}</div>
         <p>
-          Сотрудник: {vacation.employee.lastName} {vacation.employee.firstName}{" "}
-          {vacation.employee.patronymic}
+          Сотрудник: {employee?.lastName} {employee?.firstName}{" "}
+          {employee?.patronymic}
         </p>
         <p>Начало: {vacation.startDate}</p>
         <p>Конец: {vacation.endDate}</p>

@@ -7,7 +7,7 @@ export interface IEmployee {
 
 export interface IVacation {
   id: number;
-  employee: IEmployee;
+  empId: number;
   startDate: string;
   endDate: string;
   daysCount: number;

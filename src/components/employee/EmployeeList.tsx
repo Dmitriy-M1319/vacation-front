@@ -1,41 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { IEmployee } from "../../models";
 import Employee from "./Employee";
 import { Link } from "react-router-dom";
+import { log } from "console";
 
 function EmployeeList() {
-  const data: IEmployee[] = [
-    {
-      id: 1,
-      firstName: "Анна",
-      lastName: "Иванова",
-      patronymic: "Андреевна",
-    },
-    {
-      id: 2,
-      firstName: "Ольга",
-      lastName: "Иванова",
-      patronymic: "Владимировна",
-    },
-    {
-      id: 3,
-      firstName: "Наталья",
-      lastName: "Петрова",
-      patronymic: "Сергеевна",
-    },
-    {
-      id: 4,
-      firstName: "Анна",
-      lastName: "Смирнова",
-      patronymic: "Александровна",
-    },
-  ];
+  const [employees, setEmployees] = useState<IEmployee[] | null>([]);
+
+  useEffect(() => {
+    const getData = async () => {
+      const data: string | null = sessionStorage.getItem("employees");
+      if (!data) {
+        const resp = await fetch("http://localhost:8081/employees");
+        const result = await resp.json();
+        console.log(result);
+        setEmployees(result);
+        sessionStorage.setItem("employees", JSON.stringify(result));
+      } else {
+        setEmployees(JSON.parse(sessionStorage.getItem("employees")!));
+      }
+    };
+
+    getData();
+  }, []);
 
   return (
     <div className="container">
       <div className="row">
         <div className="col-12">
-          {data.map((e: IEmployee, index: number) => (
+          {employees?.map((e: IEmployee, index: number) => (
             <Employee employee={e} />
           ))}
         </div>
