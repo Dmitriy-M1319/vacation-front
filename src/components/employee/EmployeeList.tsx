@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { IEmployee } from "../../models";
 import Employee from "./Employee";
 import { Link } from "react-router-dom";
-import { log } from "console";
 
 function EmployeeList() {
   const [employees, setEmployees] = useState<IEmployee[] | null>([]);

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { IEmployee } from "../../models";
 
 interface EmployeeFormProps {
   created: boolean;
@@ -7,14 +8,58 @@ interface EmployeeFormProps {
 
 function EmployeeForm({ created }: EmployeeFormProps) {
   const data = useLocation();
-  const [newEmployee, setNewEmployee] = useState(data.state);
+  const [newEmployee, setNewEmployee] = useState<IEmployee>(data.state);
+  const navigate = useNavigate();
 
   const onCreate = () => {
-    console.log("создать объект " + newEmployee);
+    const sendData = async () => {
+      await fetch("http://localhost:8081/employees", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newEmployee),
+      })
+        .then((response) => response.json())
+        .then((emp) => {
+          const localEmployees = sessionStorage.getItem("employees");
+          if (localEmployees) {
+            let employees: IEmployee[] = JSON.parse(localEmployees);
+            employees.push(emp);
+            sessionStorage.setItem("employees", JSON.stringify(employees));
+          }
+        });
+    };
+
+    sendData();
+    navigate("/employees", { replace: true });
   };
 
   const onUpdate = () => {
-    console.log("Обновить объект " + newEmployee);
+    const sendData = async () => {
+      await fetch("http://localhost:8081/employees/" + newEmployee.id, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newEmployee),
+      })
+        .then((response) => response.json())
+        .then((emp) => {
+          const localEmployees = sessionStorage.getItem("employees");
+          if (localEmployees) {
+            let employees: IEmployee[] = JSON.parse(localEmployees);
+            let truncatedData = employees.filter((e) => e.id !== emp.id);
+            truncatedData.push(emp);
+            sessionStorage.setItem("employees", JSON.stringify(truncatedData));
+          }
+        });
+    };
+
+    sendData();
+    navigate("/employees", { replace: true });
   };
 
   return (
