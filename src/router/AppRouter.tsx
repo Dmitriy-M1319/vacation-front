@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 import { BrowserRouter } from "react-router-dom";
 import EmployeeList from "../components/employee/EmployeeList";
 import EmployeeForm from "../components/employee/EmployeeForm";
@@ -8,8 +8,8 @@ import VacationForm from "../components/vacation/VacationForm";
 
 function AppRouter() {
   return (
-    <BrowserRouter>
       <Routes>
+       <Route path="/" element={<Navigate to="/employees" />} />
         <Route path="employees" element={<EmployeeList />} />
         <Route
           path="employees/create"
@@ -29,7 +29,6 @@ function AppRouter() {
           element={<VacationForm created={false} />}
         />
       </Routes>
-    </BrowserRouter>
   );
 }
 

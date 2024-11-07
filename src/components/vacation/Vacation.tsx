@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 interface VacationProps {
   vacation: IVacation;
-  employee: IEmployee
+  employee: IEmployee;
 }
 
 function Vacation({ vacation, employee }: VacationProps) {
@@ -28,7 +28,28 @@ function Vacation({ vacation, employee }: VacationProps) {
             </Link>
           </div>
           <div className="col-2">
-            <button className="btn btn-danger">Удалить</button>
+            <button
+              className="btn btn-danger"
+              onClick={() => {
+                const delEmp = async () => {
+                  const resp = await fetch(
+                    "http://localhost:8081/vacations/" + vacation.id,
+                    {
+                      method: "DELETE",
+                    }
+                  );
+
+                  if (resp.ok) {
+                    sessionStorage.removeItem("vacations");
+                    window.location.reload();
+                  }
+                };
+
+                delEmp();
+              }}
+            >
+              Удалить
+            </button>
           </div>
         </div>
       </div>

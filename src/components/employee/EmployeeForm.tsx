@@ -63,7 +63,7 @@ function EmployeeForm({ created }: EmployeeFormProps) {
   };
 
   return (
-    <div className="card">
+    <div className="card m-3">
       <div className="card-header">
         {created ? (
           <h4>Создать сотрудника</h4>

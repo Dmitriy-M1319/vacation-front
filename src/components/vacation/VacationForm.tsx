@@ -18,7 +18,7 @@ function VacationForm({ created }: VacationFormProps) {
   };
 
   return (
-    <div className="card">
+    <div className="card m-3">
       <div className="card-header">
         {created ? <h4>Создать отпуск</h4> : <h4>Редактировать отпуск</h4>}
       </div>
