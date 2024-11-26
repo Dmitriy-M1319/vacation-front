@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { IEmployee } from "../../models";
 
@@ -6,10 +6,32 @@ interface EmployeeFormProps {
   created: boolean;
 }
 
-function EmployeeForm({ created }: EmployeeFormProps) {
+function EmployeeForm({ created = true }: EmployeeFormProps) {
   const data = useLocation();
   const [newEmployee, setNewEmployee] = useState<IEmployee>(data.state);
+  const [changed, setChanged] = useState<Boolean>(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const clearSession = () => {
+      sessionStorage.removeItem("employee");
+    };
+
+    window.addEventListener("popstate", clearSession);
+
+    const savedState = sessionStorage.getItem("employee");
+    console.log(savedState);
+    if (savedState) {
+      setNewEmployee(JSON.parse(savedState));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (changed) {
+      sessionStorage.setItem("employee", JSON.stringify(newEmployee));
+      console.log(newEmployee);
+    }
+  }, [newEmployee]);
 
   const onCreate = () => {
     const sendData = async () => {
@@ -33,6 +55,7 @@ function EmployeeForm({ created }: EmployeeFormProps) {
     };
 
     sendData();
+    sessionStorage.removeItem("employee");
     navigate("/employees", { replace: true });
   };
 
@@ -59,6 +82,7 @@ function EmployeeForm({ created }: EmployeeFormProps) {
     };
 
     sendData();
+    sessionStorage.removeItem("employee");
     navigate("/employees", { replace: true });
   };
 
@@ -77,12 +101,13 @@ function EmployeeForm({ created }: EmployeeFormProps) {
           <input
             className="form-control"
             value={newEmployee.lastName}
-            onChange={(e) =>
+            onChange={(e) => {
+              setChanged(true);
               setNewEmployee({
                 ...newEmployee,
                 lastName: e.target.value,
-              })
-            }
+              });
+            }}
           />
         </div>
         <div className="mb-3">
@@ -90,12 +115,13 @@ function EmployeeForm({ created }: EmployeeFormProps) {
           <input
             className="form-control"
             value={newEmployee.firstName}
-            onChange={(e) =>
+            onChange={(e) => {
+              setChanged(true);
               setNewEmployee({
                 ...newEmployee,
                 firstName: e.target.value,
-              })
-            }
+              });
+            }}
           />
         </div>
         <div className="mb-3">
@@ -103,12 +129,13 @@ function EmployeeForm({ created }: EmployeeFormProps) {
           <input
             className="form-control"
             value={newEmployee.patronymic}
-            onChange={(e) =>
+            onChange={(e) => {
+              setChanged(true);
               setNewEmployee({
                 ...newEmployee,
                 patronymic: e.target.value,
-              })
-            }
+              });
+            }}
           />
         </div>
         {created ? (
