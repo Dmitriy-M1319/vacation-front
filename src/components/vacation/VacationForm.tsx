@@ -17,10 +17,10 @@ function VacationForm({ created = true }: VacationFormProps) {
   const getEmployees = async () => {
     const emps: string | null = sessionStorage.getItem("employees");
     if (!emps) {
-      const resp = await fetch("http://localhost:8081/employees");
+      const resp = await fetch("http://localhost:8081/v1/employees");
       const result = await resp.json();
       console.log(result);
-      setEmployees(result);
+      setEmployees(result["employees"]);
       sessionStorage.setItem("employees", JSON.stringify(result));
     } else {
       setEmployees(JSON.parse(sessionStorage.getItem("employees")!));
@@ -57,7 +57,7 @@ function VacationForm({ created = true }: VacationFormProps) {
 
   const onCreate = () => {
     const sendData = async () => {
-      await fetch("http://localhost:8081/vacations", {
+      await fetch("http://localhost:8081/v1/vacations", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -83,7 +83,7 @@ function VacationForm({ created = true }: VacationFormProps) {
 
   const onUpdate = () => {
     const sendData = async () => {
-      await fetch("http://localhost:8081/vacations/" + newVacation.id, {
+      await fetch("http://localhost:8081/v1/vacations/" + newVacation.id, {
         method: "PUT",
         headers: {
           Accept: "application/json",

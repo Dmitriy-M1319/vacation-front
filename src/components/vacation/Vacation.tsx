@@ -33,7 +33,7 @@ function Vacation({ vacation, employee }: VacationProps) {
               onClick={() => {
                 const delEmp = async () => {
                   const resp = await fetch(
-                    "http://localhost:8081/vacations/" + vacation.id,
+                    "http://localhost:8081/v1/vacations/" + vacation.id,
                     {
                       method: "DELETE",
                     }

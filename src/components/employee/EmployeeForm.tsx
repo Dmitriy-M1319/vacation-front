@@ -35,7 +35,7 @@ function EmployeeForm({ created = true }: EmployeeFormProps) {
 
   const onCreate = () => {
     const sendData = async () => {
-      await fetch("http://localhost:8081/employees", {
+      await fetch("http://localhost:8081/v1/employees", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -61,7 +61,7 @@ function EmployeeForm({ created = true }: EmployeeFormProps) {
 
   const onUpdate = () => {
     const sendData = async () => {
-      await fetch("http://localhost:8081/employees/" + newEmployee.id, {
+      await fetch("http://localhost:8081/v1/employees/" + newEmployee.id, {
         method: "PUT",
         headers: {
           Accept: "application/json",

@@ -33,7 +33,7 @@ function Employee(props: EmployeeProps) {
               onClick={() => {
                 const delEmp = async () => {
                   const resp = await fetch(
-                    "http://localhost:8081/employees/" + props.employee.id,
+                    "http://localhost:8081/v1/employees/" + props.employee.id,
                     {
                       method: "DELETE",
                     }

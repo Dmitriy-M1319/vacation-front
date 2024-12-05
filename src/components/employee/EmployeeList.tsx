@@ -10,11 +10,11 @@ function EmployeeList() {
     const getData = async () => {
       const data: string | null = sessionStorage.getItem("employees");
       if (!data) {
-        const resp = await fetch("http://localhost:8081/employees");
+        const resp = await fetch("http://localhost:8081/v1/employees");
         const result = await resp.json();
         console.log(result);
-        setEmployees(result);
-        sessionStorage.setItem("employees", JSON.stringify(result));
+        setEmployees(result["employees"]);
+        sessionStorage.setItem("employees", JSON.stringify(result["employees"]));
       } else {
         setEmployees(JSON.parse(sessionStorage.getItem("employees")!));
       }
@@ -39,7 +39,7 @@ function EmployeeList() {
             to={"create"}
             state={{
               id: 0,
-              firstName: "",
+              firsName: "",
               lastName: "",
               patronymic: "",
             }}

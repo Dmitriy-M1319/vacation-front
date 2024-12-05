@@ -12,22 +12,23 @@ function VacationList() {
     const getData = async () => {
       const vacData: string | null = sessionStorage.getItem("vacations");
       if (!vacData) {
-        const resp = await fetch("http://localhost:8081/vacations");
+        const resp = await fetch("http://localhost:8081/v1/vacations");
         const result = await resp.json();
         console.log(result);
-        setVacations(result);
-        sessionStorage.setItem("vacations", JSON.stringify(result));
+        setVacations(result["vacations"]);
+        console.log(result["vacations"]);
+        sessionStorage.setItem("vacations", JSON.stringify(result["vacations"]));
       } else {
         setVacations(JSON.parse(sessionStorage.getItem("vacations")!));
       }
 
       const empData: string | null = sessionStorage.getItem("employees");
       if (!empData) {
-        const resp = await fetch("http://localhost:8081/employees");
+        const resp = await fetch("http://localhost:8081/v1/employees");
         const result = await resp.json();
         console.log(result);
-        setEmployees(result);
-        sessionStorage.setItem("employees", JSON.stringify(result));
+        setEmployees(result["employees"]);
+        sessionStorage.setItem("employees", JSON.stringify(result["employees"]));
       } else {
         setEmployees(JSON.parse(sessionStorage.getItem("employees")!));
       }
@@ -52,8 +53,8 @@ function VacationList() {
             to={"create"}
             state={{
               id: 0,
-              firstName: "",
-              lastName: "",
+              first_name: "",
+              last_name: "",
               patronymic: "",
             }}
           >
