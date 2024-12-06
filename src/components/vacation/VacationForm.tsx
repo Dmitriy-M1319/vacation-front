@@ -17,7 +17,7 @@ function VacationForm({ created = true }: VacationFormProps) {
   const getEmployees = async () => {
     const emps: string | null = sessionStorage.getItem("employees");
     if (!emps) {
-      const resp = await fetch("http://localhost:8081/v1/employees");
+      const resp = await fetch("http://localhost:8080/v1/employees");
       const result = await resp.json();
       console.log(result);
       setEmployees(result["employees"]);
@@ -37,7 +37,7 @@ function VacationForm({ created = true }: VacationFormProps) {
     getEmployees();
     console.log(employees);
     setSelectedEmployee(
-      newVacation.id === 0 && newVacation.empId === 0 ? -1 : newVacation.empId
+      newVacation.id === 0 && newVacation.emp_id === 0 ? -1 : newVacation.emp_id
     );
 
     const savedState = sessionStorage.getItem("vacation");
@@ -57,7 +57,7 @@ function VacationForm({ created = true }: VacationFormProps) {
 
   const onCreate = () => {
     const sendData = async () => {
-      await fetch("http://localhost:8081/v1/vacations", {
+      await fetch("http://localhost:8080/v1/vacations", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -83,7 +83,7 @@ function VacationForm({ created = true }: VacationFormProps) {
 
   const onUpdate = () => {
     const sendData = async () => {
-      await fetch("http://localhost:8081/v1/vacations/" + newVacation.id, {
+      await fetch("http://localhost:8080/v1/vacations/" + newVacation.id, {
         method: "PUT",
         headers: {
           Accept: "application/json",
@@ -122,7 +122,7 @@ function VacationForm({ created = true }: VacationFormProps) {
               setChanged(true);
               setNewVacaiton({
                 ...newVacation,
-                empId: Number.parseInt(e.target.value),
+                emp_id: Number.parseInt(e.target.value),
               });
               setSelectedEmployee(Number.parseInt(e.target.value));
             }}
@@ -132,7 +132,7 @@ function VacationForm({ created = true }: VacationFormProps) {
             </option>
             {employees!.map((emp) => (
               <option key={emp.id} value={emp.id.toString()}>
-                {emp.lastName} {emp.firstName} {emp.patronymic}
+                {emp.last_name} {emp.first_name} {emp.patronymic}
               </option>
             ))}
           </select>
@@ -141,12 +141,12 @@ function VacationForm({ created = true }: VacationFormProps) {
           <label className="form-label">Начало:</label>
           <input
             className="form-control"
-            value={newVacation.startDate}
+            value={newVacation.start_date}
             onChange={(e) => {
               setChanged(true);
               setNewVacaiton({
                 ...newVacation,
-                startDate: e.target.value,
+                start_date: e.target.value,
               });
             }}
           />
@@ -155,12 +155,12 @@ function VacationForm({ created = true }: VacationFormProps) {
           <label className="form-label">Конец:</label>
           <input
             className="form-control"
-            value={newVacation.endDate}
+            value={newVacation.end_date}
             onChange={(e) => {
               setChanged(true);
               setNewVacaiton({
                 ...newVacation,
-                endDate: e.target.value,
+                end_date: e.target.value,
               });
             }}
           />

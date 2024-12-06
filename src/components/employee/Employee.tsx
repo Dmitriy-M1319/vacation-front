@@ -1,7 +1,6 @@
 import React from "react";
 import { IEmployee } from "../../models";
 import { Link } from "react-router-dom";
-import { prependListener } from "process";
 
 interface EmployeeProps {
   employee: IEmployee;
@@ -12,8 +11,8 @@ function Employee(props: EmployeeProps) {
     <div className="row m-2 p-2 border border-primary rounded">
       <div className="col-12">
         <div className="fw-bold">Сотрудник №{props.employee.id}</div>
-        <p>Фамилия: {props.employee.lastName}</p>
-        <p>Имя: {props.employee.firstName}</p>
+        <p>Фамилия: {props.employee.last_name}</p>
+        <p>Имя: {props.employee.first_name}</p>
         <p>Отчество: {props.employee.patronymic}</p>
       </div>
       <div className="col-12">
@@ -33,13 +32,13 @@ function Employee(props: EmployeeProps) {
               onClick={() => {
                 const delEmp = async () => {
                   const resp = await fetch(
-                    "http://localhost:8081/v1/employees/" + props.employee.id,
+                    "http://localhost:8080/v1/employees/" + props.employee.id,
                     {
                       method: "DELETE",
                     }
                   );
 
-                  if(resp.ok) {
+                  if (resp.ok) {
                     sessionStorage.removeItem("employees");
                     window.location.reload();
                   }

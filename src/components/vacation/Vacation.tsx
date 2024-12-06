@@ -13,12 +13,12 @@ function Vacation({ vacation, employee }: VacationProps) {
       <div className="col-12">
         <div className="fw-bold">Отпуск №{vacation.id}</div>
         <p>
-          Сотрудник: {employee?.lastName} {employee?.firstName}{" "}
+          Сотрудник: {employee?.last_name} {employee?.first_name}{" "}
           {employee?.patronymic}
         </p>
-        <p>Начало: {vacation.startDate}</p>
-        <p>Конец: {vacation.endDate}</p>
-        <p>Продолжительность (в днях): {vacation.daysCount}</p>
+        <p>Начало: {vacation.start_date}</p>
+        <p>Конец: {vacation.end_date}</p>
+        <p>Продолжительность (в днях): {vacation.days_count}</p>
       </div>
       <div className="col-12">
         <div className="row align-items-start">
@@ -33,7 +33,7 @@ function Vacation({ vacation, employee }: VacationProps) {
               onClick={() => {
                 const delEmp = async () => {
                   const resp = await fetch(
-                    "http://localhost:8081/v1/vacations/" + vacation.id,
+                    "http://localhost:8080/v1/vacations/" + vacation.id,
                     {
                       method: "DELETE",
                     }
