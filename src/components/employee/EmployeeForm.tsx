@@ -9,7 +9,6 @@ interface EmployeeFormProps {
 function EmployeeForm({ created = true }: EmployeeFormProps) {
   const data = useLocation();
   const [newEmployee, setNewEmployee] = useState<IEmployee>(data.state);
-  //const [changed, setChanged] = useState<Boolean>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,10 +20,6 @@ function EmployeeForm({ created = true }: EmployeeFormProps) {
       if (resp.ok) {
         const form = await resp.json();
         setNewEmployee({ id: oldId, ...form["emp"] });
-        // setNewEmployee({
-        //   ...newEmployee,
-        //   id: oldId,
-        // });
         console.log({ id: oldId, ...form["emp"] });
       }
     };
@@ -78,7 +73,9 @@ function EmployeeForm({ created = true }: EmployeeFormProps) {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newEmployee),
+        body: JSON.stringify({
+          emp: newEmployee,
+        }),
       })
         .then((response) => response.json())
         .then((emp) => {
@@ -86,7 +83,7 @@ function EmployeeForm({ created = true }: EmployeeFormProps) {
           if (localEmployees) {
             let employees: IEmployee[] = JSON.parse(localEmployees);
             let truncatedData = employees.filter((e) => e.id !== emp.id);
-            truncatedData.push(emp);
+            truncatedData.push(emp["emp"]);
             sessionStorage.setItem("employees", JSON.stringify(truncatedData));
           }
         });

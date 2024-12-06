@@ -65,9 +65,10 @@ function VacationList() {
             to={"create"}
             state={{
               id: 0,
-              first_name: "",
-              last_name: "",
-              patronymic: "",
+              emp_id: 0,
+              start_date: "",
+              end_date: "",
+              days_count: 0,
             }}
           >
             Создать

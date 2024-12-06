@@ -11,7 +11,6 @@ function VacationForm({ created = true }: VacationFormProps) {
   const [newVacation, setNewVacaiton] = useState<IVacation>(data.state);
   const [employees, setEmployees] = useState<IEmployee[] | null>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<number>(-1);
-  const [changed, setChanged] = useState<Boolean>(false);
   const navigate = useNavigate();
 
   const getEmployees = async () => {
@@ -28,32 +27,54 @@ function VacationForm({ created = true }: VacationFormProps) {
   };
 
   useEffect(() => {
-    const clearSession = () => {
-      sessionStorage.removeItem("vacation");
+    const getData = async () => {
+      const oldId = newVacation.id;
+      const resp = await fetch(
+        "http://localhost:8080/v1/vacations/cache/" + newVacation.id
+      );
+      if (resp.ok) {
+        const form = await resp.json();
+        setNewVacaiton({ id: oldId, ...form["vac"] });
+        console.log({ id: oldId, ...form["vac"] });
+      }
     };
 
-    window.addEventListener("popstate", clearSession);
-
     getEmployees();
-    console.log(employees);
-    setSelectedEmployee(
-      newVacation.id === 0 && newVacation.emp_id === 0 ? -1 : newVacation.emp_id
-    );
-
-    const savedState = sessionStorage.getItem("vacation");
-    console.log(savedState);
-    if (savedState) {
-      setNewVacaiton(JSON.parse(savedState));
-      setSelectedEmployee(JSON.parse(savedState).empId);
-    }
+    getData();
   }, []);
 
-  useEffect(() => {
-    if (changed) {
-      sessionStorage.setItem("vacation", JSON.stringify(newVacation));
-      console.log(newVacation);
-    }
-  }, [newVacation]);
+  const deleteFormDataFromCache = () => {
+    const delVac = async () => {
+      await fetch(
+        "http://localhost:8080/v1/vacations/cache/" + newVacation.id,
+        {
+          method: "DELETE",
+        }
+      );
+    };
+    delVac();
+  };
+
+  const onFormSave = () => {
+    const sendData = async () => {
+      await fetch(
+        "http://localhost:8080/v1/vacations/cache/" + newVacation.id,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            vac: newVacation,
+          }),
+        }
+      );
+    };
+
+    console.log(JSON.stringify({ vac: newVacation }));
+    sendData();
+  };
 
   const onCreate = () => {
     const sendData = async () => {
@@ -70,13 +91,14 @@ function VacationForm({ created = true }: VacationFormProps) {
           const localVacations = sessionStorage.getItem("vacations");
           if (localVacations) {
             let vacations: IVacation[] = JSON.parse(localVacations);
-            vacations.push(vac);
+            vacations.push(vac["vac"]);
             sessionStorage.setItem("vacations", JSON.stringify(vacations));
           }
         });
     };
 
     sendData();
+    deleteFormDataFromCache();
     sessionStorage.removeItem("vacation");
     navigate("/vacations", { replace: true });
   };
@@ -89,7 +111,7 @@ function VacationForm({ created = true }: VacationFormProps) {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newVacation),
+        body: JSON.stringify({ vac: newVacation }),
       })
         .then((response) => response.json())
         .then((vac) => {
@@ -97,13 +119,14 @@ function VacationForm({ created = true }: VacationFormProps) {
           if (localVacations) {
             let vacations: IVacation[] = JSON.parse(localVacations);
             let truncatedData = vacations.filter((v) => v.id !== vac.id);
-            truncatedData.push(vac);
+            truncatedData.push(vac["vac"]);
             sessionStorage.setItem("vacations", JSON.stringify(truncatedData));
           }
         });
     };
 
     sendData();
+    deleteFormDataFromCache();
     sessionStorage.removeItem("vacation");
     navigate("/vacations", { replace: true });
   };
@@ -119,7 +142,6 @@ function VacationForm({ created = true }: VacationFormProps) {
             className="form-control"
             value={selectedEmployee}
             onChange={(e) => {
-              setChanged(true);
               setNewVacaiton({
                 ...newVacation,
                 emp_id: Number.parseInt(e.target.value),
@@ -143,7 +165,6 @@ function VacationForm({ created = true }: VacationFormProps) {
             className="form-control"
             value={newVacation.start_date}
             onChange={(e) => {
-              setChanged(true);
               setNewVacaiton({
                 ...newVacation,
                 start_date: e.target.value,
@@ -157,7 +178,6 @@ function VacationForm({ created = true }: VacationFormProps) {
             className="form-control"
             value={newVacation.end_date}
             onChange={(e) => {
-              setChanged(true);
               setNewVacaiton({
                 ...newVacation,
                 end_date: e.target.value,
@@ -165,15 +185,22 @@ function VacationForm({ created = true }: VacationFormProps) {
             }}
           />
         </div>
-        {created ? (
-          <button className="btn btn-primary" onClick={onCreate}>
-            Создать
-          </button>
-        ) : (
-          <button className="btn btn-success" onClick={onUpdate}>
-            Редактировать
-          </button>
-        )}
+        <div className="row">
+          <div className="col d-flex justify-content-end">
+            <button className="btn btn-secondary me-3" onClick={onFormSave}>
+              Сохранить черновик
+            </button>
+            {created ? (
+              <button className="btn btn-primary" onClick={onCreate}>
+                Создать
+              </button>
+            ) : (
+              <button className="btn btn-success" onClick={onUpdate}>
+                Редактировать
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
