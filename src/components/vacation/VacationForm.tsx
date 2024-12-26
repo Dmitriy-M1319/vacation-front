@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { IEmployee, IVacation } from "../../models";
+import Modal from "../utils/Modal";
 
 interface VacationFormProps {
   created: boolean;
@@ -11,7 +12,16 @@ function VacationForm({ created = true }: VacationFormProps) {
   const [newVacation, setNewVacaiton] = useState<IVacation>(data.state);
   const [employees, setEmployees] = useState<IEmployee[] | null>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<number>(-1);
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+
+  const openModal = () => {
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
 
   const getEmployees = async () => {
     const emps: string | null = sessionStorage.getItem("employees");
@@ -86,7 +96,13 @@ function VacationForm({ created = true }: VacationFormProps) {
         },
         body: JSON.stringify(newVacation),
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            openModal();
+            throw new Error();
+          }
+          return response.json();
+        })
         .then((vac) => {
           const localVacations = sessionStorage.getItem("vacations");
           if (localVacations) {
@@ -94,41 +110,66 @@ function VacationForm({ created = true }: VacationFormProps) {
             vacations.push(vac["vac"]);
             sessionStorage.setItem("vacations", JSON.stringify(vacations));
           }
+
+          deleteFormDataFromCache();
+          sessionStorage.removeItem("vacation");
+          navigate("/vacations", { replace: true });
+        })
+        .catch((error) => {
+          setShowModal(true);
+          console.log(error);
+          console.log(showModal);
         });
     };
 
     sendData();
-    deleteFormDataFromCache();
-    sessionStorage.removeItem("vacation");
-    navigate("/vacations", { replace: true });
   };
 
   const onUpdate = () => {
-    const sendData = async () => {
-      await fetch("http://localhost:8080/v1/vacations/" + newVacation.id, {
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ vac: newVacation }),
-      })
-        .then((response) => response.json())
-        .then((vac) => {
-          const localVacations = sessionStorage.getItem("vacations");
-          if (localVacations) {
-            let vacations: IVacation[] = JSON.parse(localVacations);
-            let truncatedData = vacations.filter((v) => v.id !== vac.id);
-            truncatedData.push(vac["vac"]);
-            sessionStorage.setItem("vacations", JSON.stringify(truncatedData));
-          }
-        });
-    };
+    try {
+      const sendData = async () => {
+        await fetch("http://localhost:8080/v1/vacations/" + newVacation.id, {
+          method: "PUT",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ vac: newVacation }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              openModal();
+              throw new Error();
+            }
+            return response.json();
+          })
+          .then((vac) => {
+            const localVacations = sessionStorage.getItem("vacations");
+            if (localVacations) {
+              let vacations: IVacation[] = JSON.parse(localVacations);
+              let truncatedData = vacations.filter((v) => v.id !== vac.id);
+              truncatedData.push(vac["vac"]);
+              sessionStorage.setItem(
+                "vacations",
+                JSON.stringify(truncatedData)
+              );
+            }
 
-    sendData();
-    deleteFormDataFromCache();
-    sessionStorage.removeItem("vacation");
-    navigate("/vacations", { replace: true });
+            deleteFormDataFromCache();
+            sessionStorage.removeItem("vacation");
+            navigate("/vacations", { replace: true });
+          })
+          .catch((error) => {
+            setShowModal(true);
+            console.log(error);
+            console.log(showModal);
+          });
+      };
+
+      sendData();
+    } catch (error) {
+      openModal();
+    }
   };
   return (
     <div className="card m-3">
@@ -202,6 +243,13 @@ function VacationForm({ created = true }: VacationFormProps) {
           </div>
         </div>
       </div>
+      {showModal && (
+        <Modal
+          show={showModal}
+          onClose={closeModal}
+          message="Не удалось обработать запрос"
+        />
+      )}
     </div>
   );
 }
